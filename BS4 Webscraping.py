@@ -10,14 +10,16 @@ class looper:
         self.url = url
         self.num = num
         self.pos = pos
-
+    
+    # Use urllib to make the request to read and decode the body of the webpage. We are looking for <anchor> in the HTML
     def make_request(self):
         lib  = urllib.request.Request(self.url)
         
         
         with urllib.request.urlopen(lib) as response:
             txt = response.read().decode()
-        
+
+        # get all <anchor> in a list
         bs = BeautifulSoup(txt,'html.parser').find_all('a')[self.pos]
         
         return str(bs.get('href'))
@@ -29,13 +31,15 @@ class looper:
         #print(x)
         for i in range(0,self.num):
             x.append(self.make_request())
-            #take the output from make rdequests intial
+            #redifine self.url to the latest URL within the for loop.
             self.url = self.make_request()
-            
+
+        #Use regex search to pull the last name from the url string
         return re.search(r'by_([A-z]+)\.html',x[-1]).group(1)
     
 
+#Define the parameters of the query
 query = looper(initial_url,17,7)
 
-#\query.make_request() ,
+#print the output
 print(query.url_loop())
